@@ -31,7 +31,7 @@ public class KeyInput extends KeyAdapter {//googled that it basically becomes a 
         //       upKeys.add(e.getKeyCode());
     }
 
-    public boolean isKeyDown (int keyCode){ //googled, makes a boolean that returns a 'true' when you give it the int ID of a key thats in the pressedkeys set, tl;dr checks whether that key is being pressed
+    public boolean isKeyDown (int keyCode){ //googled, makes a boolean that returns a 'true' when you give it the int ID of a key thats in the pressedkeys set, tl;dr checks whether that key is being pressed, just a more complicated version of the moving boolean in basicgame
         return pressedKeys.contains(keyCode);
     }
     /*public boolean anyKeyDown(){
