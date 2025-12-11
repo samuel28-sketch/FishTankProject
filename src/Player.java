@@ -11,6 +11,7 @@ public class Player {
     double dx;
     double dy;
     boolean isAlive = true;
+    boolean iFrames;
 
     public Player(int widthInput, int heightInput, int xposInput, int yposInput){
         hitbox = new Rectangle(xposInput, yposInput, widthInput, heightInput);

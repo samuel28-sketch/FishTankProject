@@ -17,11 +17,14 @@ public class BasicGameApp implements Runnable {
     // Like Mario mario = new Mario(); //
 
     Player player; //adds all the variables used publically in this class and stuff
+    int iframes;
     Goal leftGoal;
     Goal rightGoal;
     Enemy shark;
     Image background;
     double distance;
+    double speed = 3;
+    int frameCount;
     int scorePlayer = 0;
     Text scoreboard;
 
@@ -70,6 +73,7 @@ boolean moving; //creates a moving boolean to detect when the playe risnt moving
         player.move(); //player constantly moves by dx and dy which are set to 0, decelerate to 0, and increase w the keyboard inputs bellow, this code bellow makes it accelerate while a key is being held
         if (player.isAlive) {
             UHOHHESCHASINGYOU(); //makes the enemy chase the player only while its alive
+            YOOHESSPEEDINGUPP();
         }
         if(keyInput.isKeyDown(KeyEvent.VK_W)){
             player.dy-=.5 ;
@@ -169,6 +173,7 @@ else {
         //for the moment we will loop things forever.
         while (true) {
             moveThings();  //move all the game objects
+            iframeSet();
             collisionCheck(); //checks collisions for all the hitboxes
             render();  // paint the graphics
             pause(10); // sleep for 10 ms
@@ -234,6 +239,8 @@ else {
         }
         if(key==KeyEvent.VK_R){ //if you press 'r' it will reset the player back to being alive for when you die, and also resets the score and player position
             player.isAlive=true; //brings the player back to life
+            player.iFrames = true;
+            frameCount = 0;
             scorePlayer = 0; //resets score
             player.xpos = 200; //resets player's position
             player.ypos = 300;
@@ -267,16 +274,38 @@ moving = false; //when you release a key it sets moving to false and applies fri
         double ydistance =  player.ypos - shark.ypos; //finds the height of the triangle between the shark and player
         double xdistance =  player.xpos - shark.xpos; //finds the length (aka base) of the triangle between the shark and player
         double angle = Math.atan2(ydistance, xdistance); //finds the angle of where the the player is to the shark
-        shark.xpos += Math.cos(angle)*3; //these 2 lines always move the shark through the hypotenuse of said triangle i.e the shortest path
-        shark.ypos += Math.sin(angle)*3;
+        shark.xpos += Math.cos(angle)*speed; //these 2 lines always move the shark through the hypotenuse of said triangle i.e the shortest path
+        shark.ypos += Math.sin(angle)*speed;
         shark.hitbox = new Rectangle((int)shark.xpos,(int)shark.ypos,shark.width,shark.height);//updates shark hitbox after moving
         distance = Math.sqrt(xdistance * xdistance+ydistance*ydistance);//uses pythag. thry. to find the distance between player and shark, and uses that to update the shark's photo if its close
         //System.out.println(distance);
     }
 
+    public void YOOHESSPEEDINGUPP(){
+
+        if (distance < 150 && player.xpos>600&&frameCount<60) {
+            speed=6;
+            frameCount++;
+        }
+        else if (frameCount>=60&&frameCount<360){
+            speed=3;
+            frameCount++;
+        }
+        else if (frameCount>=360){
+            frameCount = 0;
+        }
+        else {speed = 3;
+        //System.out.println(frameCount);
+        }
+        if (scorePlayer>10){
+            speed*=.1*scorePlayer;
+        }
+        //else {speed=3;}
+    }
+
 
     public void collisionCheck(){
-        if (player.hitbox.intersects(shark.hitbox)){
+        if (player.hitbox.intersects(shark.hitbox)&& !player.iFrames){
             player.isAlive = false; //kills the player if it hits the shark
         }
         if (player.hitbox.intersects(rightGoal.hitbox)&& player.isAlive){
@@ -285,10 +314,17 @@ moving = false; //when you release a key it sets moving to false and applies fri
             player.xpos=200; //sets the player back to starting position
 
         }
-
-
     }
 
+    public void iframeSet(){
+        if (player.iFrames){
+            frameCount ++;
+        }
+        if (frameCount>30){
+            player.iFrames = false;
+            frameCount = 0;
+        }
+    }
 
 //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
